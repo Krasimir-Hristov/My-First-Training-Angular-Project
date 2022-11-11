@@ -5,7 +5,7 @@ import { Component,
 } 
 from '@angular/core';
 
-import { Ingredient } from 'src/shared/ingredient.module';
+import { Ingredient } from 'src/shared/ingredient.model';
 import { ShoppingListService } from '../shopping.list.service';
 
 @Component({
