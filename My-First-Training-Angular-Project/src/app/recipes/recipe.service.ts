@@ -9,24 +9,30 @@ import { ShoppingListService } from "../shopping-list/shopping.list.service";
 export class RecipeService {
     recipesChanged = new Subject<Recipe[]>();
 
-    private recipes: Recipe[] = [
-        new Recipe('A Test Recipe',
-        'This is simply a test', 
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ7pfrSCRLkoNVtNYe5cK6cKR3oEmuSf0xnQ&usqp=CAU', 
-        [
-            new Ingredient('Meat', 1),
-            new Ingredient('French Fries', 20),
-        ]),
-        new Recipe('Another Test Recipe',
-        'This is simply a test', 
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ7pfrSCRLkoNVtNYe5cK6cKR3oEmuSf0xnQ&usqp=CAU', 
-        [
-            new Ingredient('Buns', 2),
-            new Ingredient('Meat', 1),
-        ])
-    ];
+    // private recipes: Recipe[] = [
+    //     new Recipe('A Test Recipe',
+    //     'This is simply a test', 
+    //     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ7pfrSCRLkoNVtNYe5cK6cKR3oEmuSf0xnQ&usqp=CAU', 
+    //     [
+    //         new Ingredient('Meat', 1),
+    //         new Ingredient('French Fries', 20),
+    //     ]),
+    //     new Recipe('Another Test Recipe',
+    //     'This is simply a test', 
+    //     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ7pfrSCRLkoNVtNYe5cK6cKR3oEmuSf0xnQ&usqp=CAU', 
+    //     [
+    //         new Ingredient('Buns', 2),
+    //         new Ingredient('Meat', 1),
+    //     ])
+    // ];
+    private recipes: Recipe[] = [];
 
     constructor(private slService: ShoppingListService) { }
+
+    setRecipes(recipes: Recipe[]) {
+        this.recipes = recipes;
+        this.recipesChanged.next(this.recipes.slice());
+    }
 
     getRecipes() {
         return this.recipes.slice();
