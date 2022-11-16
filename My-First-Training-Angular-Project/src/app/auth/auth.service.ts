@@ -15,7 +15,7 @@ export interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-    user = new BehaviorSubject<User>(null);
+  user = new BehaviorSubject<User>(null);
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -29,9 +29,17 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(catchError(this.handleError), tap( resData => {
-        this.handleAuthentication(resData.email, resData.localId, resData.idToken, Number(resData.expiresIn))
-      }));
+      .pipe(
+        catchError(this.handleError),
+        tap((resData) => {
+          this.handleAuthentication(
+            resData.email,
+            resData.localId,
+            resData.idToken,
+            Number(resData.expiresIn)
+          );
+        })
+      );
   }
 
   login(email: string, password: string) {
@@ -44,9 +52,39 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(catchError(this.handleError), tap(resData => {
-            this.handleAuthentication(resData.email, resData.localId, resData.idToken, Number(resData.expiresIn));
-      }));
+      .pipe(
+        catchError(this.handleError),
+        tap((resData) => {
+          this.handleAuthentication(
+            resData.email,
+            resData.localId,
+            resData.idToken,
+            Number(resData.expiresIn)
+          );
+        })
+      );
+  }
+
+  autoLogin() {
+    const userData: {
+        email: string;
+        id: string;
+        _token: string;
+        _tokenExpirationdate: string;
+    } = JSON.parse(localStorage.getItem('userData'));
+    if(!userData) {
+        return;
+    }
+    
+    const loeadedUser = new User(
+        userData.email, 
+        userData.id, 
+        userData._token, 
+        new Date(userData._tokenExpirationdate));
+
+        if (loeadedUser.token) {
+            this.user.next(loeadedUser);
+        }
   }
 
   logout() {
@@ -54,10 +92,16 @@ export class AuthService {
     this.router.navigate(['/auth']);
   }
 
-  private handleAuthentication(email: string, userId: string, token: string, expiresIn: number) {
+  private handleAuthentication(
+    email: string,
+    userId: string,
+    token: string,
+    expiresIn: number
+  ) {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-        const user = new User(email, userId, token, expirationDate);
-        this.user.next(user);
+    const user = new User(email, userId, token, expirationDate);
+    this.user.next(user);
+    localStorage.setItem('userData', JSON.stringify(user));
   }
 
   private handleError(errorRes: HttpErrorResponse) {
